@@ -1,5 +1,5 @@
 //! Here we go, finally our runtime implementation,
-//! this will be a toy but with a very big ambition to begin a
+//! this will be a very simple but with a very big ambition to begin a
 //! use runtime some day full od experimental idea that we want
 //! to test and see what is the impact of it.
 use std::collections::LinkedList;
@@ -78,7 +78,7 @@ pub fn block_on(future: impl Future<Output = ()> + Send + Sync + 'static) {
     Runtime::spawner().spawn_blocking(future);
 }
 /// Block further execution of a program until all of the tasks on the
-/// `whorl` runtime are completed.
+/// `rio` runtime are completed.
 pub fn wait() {
     let runtime = Runtime::get();
     while runtime.size.load(Ordering::Relaxed) > 0 {}
