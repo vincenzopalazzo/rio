@@ -1,0 +1,12 @@
+[package]
+name = "rio_triage_await"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rio_rt = { path = "../../rt" }
+clap = "4.0.9"
+async-std = "1.12.0"
+surf = { version = "2.3.2", features = [ "h1-client" ] }
+log = "0.4"
+env_logger = "0.9.1"

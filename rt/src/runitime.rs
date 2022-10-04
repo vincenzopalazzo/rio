@@ -24,14 +24,6 @@ pub(crate) struct Runtime {
 
 /// Runtime implementation, this is where the magic happens!
 impl Runtime {
-    fn new() -> Self {
-        Runtime {
-            task_queue: Arc::new(Mutex::new(LinkedList::new())),
-            spawner: Spawner::new(),
-            size: AtomicUsize::new(0),
-        }
-    }
-
     /// start the runtime by spowing the event look on a thread!
     fn start() {
         std::thread::spawn(|| loop {
@@ -62,11 +54,7 @@ impl Runtime {
         self.task_queue.lock().unwrap().pop_front()
     }
 }
-static INSTANCE: LazyLock<Runtime> = LazyLock::new(|| {
-    let runtime = Runtime::new();
-    configure();
-    runtime
-});
+static INSTANCE: LazyLock<Runtime> = LazyLock::new(|| configure());
 
 /// Configure the runtime!
 fn configure() -> Runtime {
