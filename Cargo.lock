@@ -3,13 +3,13 @@
 version = 3
 
 [[package]]
-name = "io"
+name = "rio_io"
 version = "0.1.0"
 
 [[package]]
-name = "lib"
-version = "0.1.0"
+name = "rio_lib"
+version = "0.1.0-alpha.1"
 
 [[package]]
-name = "rt"
-version = "0.1.0"
+name = "rio_rt"
+version = "0.1.0-alpha.1"

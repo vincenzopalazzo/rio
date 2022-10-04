@@ -7,7 +7,6 @@ use std::task::{Context, Poll, Wake, Waker};
 
 use crate::runitime::Runtime;
 
-
 type PinFuture = Mutex<Pin<Box<dyn Future<Output = ()> + Send + Sync + 'static>>>;
 
 /// The `Task` is the basic unit for the executor. It represents a `Future`
