@@ -2,5 +2,11 @@
 name = "rio_rt"
 version = "0.1.0-alpha.1"
 edition = "2021"
+authors = ["Vincenzo Palazzo <vincenzopalazzodev@gmail.com>"]
+description = "A minimal async runtime with an experimental ambition to be an portable and interoperable async runtime for Rust"
+readme = "README.md"
+homepage = "https://github.com/vincenzopalazzo/rio"
+repository = "https://github.com/vincenzopalazzo/rio.git"
+license = "GPL-2.0"
 
 [dependencies]
