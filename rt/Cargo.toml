@@ -10,3 +10,4 @@ repository = "https://github.com/vincenzopalazzo/rio.git"
 license = "GPL-2.0"
 
 [dependencies]
+log = "0.4"

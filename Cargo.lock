@@ -1386,6 +1386,9 @@ version = "0.1.0-alpha.1"
 [[package]]
 name = "rio_rt"
 version = "0.1.0-alpha.1"
+dependencies = [
+ "log",
+]
 
 [[package]]
 name = "rio_triage_await"

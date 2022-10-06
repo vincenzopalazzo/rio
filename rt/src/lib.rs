@@ -8,7 +8,5 @@
 //! programming, because there is a lot to learn and a lot to contribute.
 // TODO: move feature inside a std :)
 #![feature(once_cell)]
-pub mod lazy;
 pub mod runitime;
-pub mod spawner;
 pub mod task;
