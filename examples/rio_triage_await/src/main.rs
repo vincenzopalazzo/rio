@@ -9,6 +9,7 @@ mod github;
 
 use extractor::Extractor;
 
+/// FIXME: this generate a compiler crash if called inside the rio runtime
 async fn run(extractor: &impl extractor::Extractor<Output = String>) -> Result<(), surf::Error> {
     let content = extractor.search_new().await?;
     info!("{}", content);
@@ -18,9 +19,16 @@ async fn run(extractor: &impl extractor::Extractor<Output = String>) -> Result<(
 fn main() {
     env_logger::init();
     debug!("Here we go, we are all good");
-    rio::block_on(async {
-        let github = github::GithubExtractor::new();
-        run(&github).await.unwrap()
+
+    let github = github::GithubExtractor::new();
+    rio::block_on(async move {
+        let handle_service = github.clone();
+        async move {
+            if let Err(e) = handle_service.search_new().await {
+                debug!("error received {}", e);
+            }
+        }
+        .await;
     });
     rio::wait();
 }

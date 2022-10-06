@@ -6,7 +6,7 @@
 use crate::extractor::Extractor;
 use log::{debug, info};
 use surf;
-
+#[derive(Clone)]
 pub(crate) struct GithubExtractor {}
 
 impl GithubExtractor {
