@@ -9,7 +9,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, LazyLock, Mutex};
 use std::task::Poll;
 
-use log::info;
+use log::debug;
 
 use crate::task::Task;
 
@@ -27,14 +27,13 @@ impl Runtime {
     /// start the runtime by spowing the event look on a thread!
     fn start() {
         std::thread::spawn(|| loop {
-            info!("Size Task: {}", Runtime::get().size.load(Ordering::Relaxed));
             let task = match Runtime::get().pop_front() {
                 Some(task) => task,
                 None => continue,
             };
 
             if let Poll::Ready(_) = task.poll() {
-                info!("Future returned");
+                debug!("Future returned");
             }
         });
     }

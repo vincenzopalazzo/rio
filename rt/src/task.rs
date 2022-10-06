@@ -23,6 +23,9 @@ pub(crate) struct Task {
     /// We need a way to check if the runtime should block on this task and
     /// so we use a boolean here to check that!
     block: bool,
+    // The waker is a self reference of the stack but if it is
+    // not None, this mean that it is already been pool
+    waker: Option<Arc<Waker>>,
 }
 
 impl Wake for Task {
@@ -47,16 +50,23 @@ impl Task {
         Arc::new(Task {
             future: Mutex::new(Box::pin(future)),
             block,
+            waker: None,
         })
     }
 
     /// Pool the following task!
     pub fn poll(self: &Arc<Self>) -> Poll<()> {
-        let waker = self.waker();
-        let mut ctx = Context::from_waker(&waker);
-        // FIXME: this is the good place where to remove the element
-        // from the queue?
-        self.future.lock().unwrap().as_mut().poll(&mut ctx)
+        // If the waker exist there is no need to
+        // poll a new waker, this feature is already in the background
+        if let None = self.waker {
+            let waker = self.waker();
+            let mut ctx = Context::from_waker(&waker);
+            // FIXME: this is the good place where to remove the element
+            // from the queue?
+            self.future.lock().unwrap().as_mut().poll(&mut ctx)
+        } else {
+            Poll::Pending
+        }
     }
 
     // FIXIME: what is this method?
