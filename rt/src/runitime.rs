@@ -4,8 +4,9 @@
 //! to test and see what is the impact of it.
 use std::collections::LinkedList;
 use std::future::Future;
+use std::ops::Deref;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, LazyLock, Mutex};
 use std::task::Poll;
 
 use crate::spawner::Spawner;
@@ -23,6 +24,14 @@ pub(crate) struct Runtime {
 
 /// Runtime implementation, this is where the magic happens!
 impl Runtime {
+    fn new() -> Self {
+        Runtime {
+            task_queue: Arc::new(Mutex::new(LinkedList::new())),
+            spawner: Spawner::new(),
+            size: AtomicUsize::new(0),
+        }
+    }
+
     /// start the runtime by spowing the event look on a thread!
     fn start() {
         std::thread::spawn(|| loop {
@@ -42,7 +51,7 @@ impl Runtime {
     }
 
     pub fn get() -> &'static Runtime {
-        INSTANCE.get_or_init(configure)
+        INSTANCE.deref()
     }
 
     pub fn spawner() -> Spawner {
@@ -53,7 +62,11 @@ impl Runtime {
         self.task_queue.lock().unwrap().pop_front()
     }
 }
-static INSTANCE: crate::lazy::Lazy<Runtime> = crate::lazy::Lazy::new();
+static INSTANCE: LazyLock<Runtime> = LazyLock::new(|| {
+    let runtime = Runtime::new();
+    configure();
+    runtime
+});
 
 /// Configure the runtime!
 fn configure() -> Runtime {
@@ -69,12 +82,12 @@ fn configure() -> Runtime {
 }
 
 /// Spawn a non-blocking `Future` onto the `whorl` runtime
-pub fn spawn(future: impl Future<Output = ()> + Send + Sync + 'static) {
+pub fn spawn(future: impl Future<Output = ()> + Send + 'static) {
     Runtime::spawner().spawn(future);
 }
 /// Block on a `Future` and stop others on the `whorl` runtime until this
 /// one completes.
-pub fn block_on(future: impl Future<Output = ()> + Send + Sync + 'static) {
+pub fn block_on(future: impl Future<Output = ()> + Send + 'static) {
     Runtime::spawner().spawn_blocking(future);
 }
 /// Block further execution of a program until all of the tasks on the

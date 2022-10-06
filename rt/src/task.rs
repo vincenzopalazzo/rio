@@ -7,7 +7,7 @@ use std::task::{Context, Poll, Wake, Waker};
 
 use crate::runitime::Runtime;
 
-type PinFuture = Mutex<Pin<Box<dyn Future<Output = ()> + Send + Sync + 'static>>>;
+type PinFuture = Mutex<Pin<Box<dyn Future<Output = ()> + Send + 'static>>>;
 
 /// The `Task` is the basic unit for the executor. It represents a `Future`
 /// that may or may not be completed. We spawn `Task`s to be run and poll
@@ -42,10 +42,7 @@ impl Drop for Task {
 }
 
 impl Task {
-    pub(crate) fn new(
-        block: bool,
-        future: impl Future<Output = ()> + Send + Sync + 'static,
-    ) -> Arc<Self> {
+    pub(crate) fn new(block: bool, future: impl Future<Output = ()> + Send + 'static) -> Arc<Self> {
         Runtime::get().size.fetch_add(1, Ordering::Relaxed);
         Arc::new(Task {
             future: Mutex::new(Box::pin(future)),
