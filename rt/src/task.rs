@@ -28,9 +28,9 @@ pub(crate) struct Task {
 impl Wake for Task {
     fn wake(self: Arc<Self>) {
         if self.is_blocking() {
-            Runtime::spawner().inner_spawn_blocking(self);
+            Runtime::get().inner_spawn_blocking(self);
         } else {
-            Runtime::spawner().inner_spawn(self);
+            Runtime::get().inner_spawn(self);
         }
     }
 }
@@ -54,6 +54,8 @@ impl Task {
     pub fn poll(self: &Arc<Self>) -> Poll<()> {
         let waker = self.waker();
         let mut ctx = Context::from_waker(&waker);
+        // FIXME: this is the good place where to remove the element
+        // from the queue?
         self.future.lock().unwrap().as_mut().poll(&mut ctx)
     }
 
