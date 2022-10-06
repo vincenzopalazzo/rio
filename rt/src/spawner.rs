@@ -1,7 +1,6 @@
 //! Spawner crate implementation
-use std::collections::LinkedList;
 use std::future::Future;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use crate::runitime::Queue;
 use crate::task::Task;
@@ -10,13 +9,8 @@ use crate::task::Task;
 pub(crate) struct Spawner {
     pub(crate) queue: Queue,
 }
-impl Spawner {
-    pub(crate) fn new() -> Self {
-        Spawner {
-            queue: Arc::new(Mutex::new(LinkedList::new())),
-        }
-    }
 
+impl Spawner {
     /// This is the function that gets called by the `spawn` function to
     /// actually create a new `Task` in our queue. It takes the `Future`,
     /// constructs a `Task` and then pushes it to the back of the queue.

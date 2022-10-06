@@ -3,5 +3,6 @@
 members = [
         "io",
         "lib",
-        "rt"
+        "rt",
+        "examples/rio_triage_await"
 ]
