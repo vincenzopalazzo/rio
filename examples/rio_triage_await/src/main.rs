@@ -1,19 +1,26 @@
+#![feature(async_fn_in_trait)]
+#![feature(associated_type_defaults)]
 use log::{debug, info};
-use rio_rt::runitime::{block_on, wait};
+use rio_rt::runitime as rio;
 use surf;
 
-async fn build_request() -> Result<(), surf::Error> {
-    debug!("Running the https request");
-    let mut res = surf::get("https://api.github.com/octocat").await?;
-    info!("{}", res.body_string().await?);
+pub(crate) mod extractor;
+mod github;
+
+use extractor::Extractor;
+
+async fn run(extractor: &impl extractor::Extractor<Output = String>) -> Result<(), surf::Error> {
+    let content = extractor.search_new().await?;
+    info!("{}", content);
     Ok(())
 }
 
 fn main() {
     env_logger::init();
     debug!("Here we go, we are all good");
-    block_on(async {
-        build_request().await.unwrap();
+    rio::block_on(async {
+        let github = github::GithubExtractor::new();
+        run(&github).await.unwrap()
     });
-    wait();
+    rio::wait();
 }
