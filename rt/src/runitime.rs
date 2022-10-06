@@ -8,9 +8,8 @@ use std::ops::Deref;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::{Arc, LazyLock, Mutex};
 use std::task::Poll;
-use std::task::Wake;
 
-use log::info;
+use log::debug;
 
 use crate::task::Task;
 
@@ -27,23 +26,16 @@ pub(crate) struct Runtime {
 impl Runtime {
     /// start the runtime by spowing the event look on a thread!
     fn start() {
-        std::thread::spawn(|| {
-            while !Runtime::is_empty() {
-                info!("Size Task: {}", Runtime::get().size.load(Ordering::Relaxed));
-                let task = match Runtime::get().pop_front() {
-                    Some(task) => task,
-                    None => continue,
-                };
+        std::thread::spawn(|| loop {
+            let task = match Runtime::get().pop_front() {
+                Some(task) => task,
+                None => continue,
+            };
 
-                if let Poll::Pending = task.poll() {
-                    task.wake();
-                }
+            if let Poll::Ready(_) = task.poll() {
+                debug!("Future returned");
             }
         });
-    }
-
-    pub(crate) fn is_empty() -> bool {
-        Runtime::get().task_queue.lock().unwrap().is_empty()
     }
 
     pub fn get() -> &'static Runtime {
