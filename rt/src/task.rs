@@ -16,9 +16,7 @@ type PinFuture = Mutex<Pin<Box<dyn Future<Output = ()> + Send + 'static>>>;
 pub(crate) struct Task {
     /// This is the actual `Future` we will poll inside of a `Task`. We `Box`
     /// and `Pin` the `Future` when we create a task so that we don't need
-    /// to worry about pinning or more complicated things in the runtime. We
-    /// also need to make sure this is `Send + Sync` so we can use it across threads
-    /// and so we lock the `Pin<Box<dyn Future>>` inside a `Mutex`.
+    /// to worry about pinning or more complicated things in the runtime.
     future: PinFuture,
     /// We need a way to check if the runtime should block on this task and
     /// so we use a boolean here to check that!
