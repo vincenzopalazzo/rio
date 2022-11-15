@@ -3,7 +3,7 @@
 
 pub trait Printer<T> {
     /// Build a new printer!
-    fn new() -> Self;
+    fn new(created: &str, since: &str, team: &str) -> Self;
 
     /// Take an input the content that can be
     /// the result of a API call and printify

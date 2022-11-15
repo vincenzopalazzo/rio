@@ -6,8 +6,8 @@ pub struct NewIssue {
     pub number: u64,
     pub title: String,
     pub body: String,
-    pub labels: IssueLabel,
-    pub assignee: IssueAssigned,
+    pub labels: Vec<IssueLabel>,
+    pub assignees: Vec<IssueAssigned>,
     pub created_at: String,
 }
 
