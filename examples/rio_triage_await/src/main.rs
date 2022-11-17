@@ -1,31 +1,36 @@
 #![feature(async_fn_in_trait)]
 #![feature(associated_type_defaults)]
+#![feature(inherent_associated_types)]
 use extractor::PrintFormat;
 use github::model::NewIssue;
+use hackmd::api::HackmdAPI;
+use hackmd::model::NewNote;
 use log::debug;
 use rio_rt::runitime as rio;
 use surf;
 
 pub(crate) mod extractor;
 mod github;
+pub mod hackmd;
 mod model;
 pub(crate) mod printer;
 
 async fn run(
     extractor: &impl extractor::Extractor<Output = Vec<NewIssue>>,
+    hackmd_api: &HackmdAPI,
 ) -> Result<(), surf::Error> {
     let content = extractor.search_new().await?;
     let result = extractor.printify(&content, PrintFormat::Markdown).await;
-    debug!("\n{result}");
+
+    let opts = NewNote::new(&result);
+    hackmd_api.new_note(&opts).await?;
     Ok(())
 }
 
 fn main() {
     env_logger::init();
-    debug!("Here we go, we are all good");
 
     // FIXME: load conf from json
-
     let conf = model::TriageConf {
         team: "async-wg".to_owned(),
         git: model::GitConf {
@@ -37,8 +42,10 @@ fn main() {
     };
 
     let github = github::GithubExtractor::new(&conf);
+    let hackmd_api = hackmd::api::HackmdAPI::new("", false);
+
     rio::block_on(async move {
-        run(&github).await.unwrap();
+        run(&github, &hackmd_api).await.unwrap();
     });
 
     rio::wait();
