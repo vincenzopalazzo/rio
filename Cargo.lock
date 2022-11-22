@@ -1110,6 +1110,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "lifetime_issue"
+version = "0.1.0"
+dependencies = [
+ "rio_rt",
+]
+
+[[package]]
 name = "link-cplusplus"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
