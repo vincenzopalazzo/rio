@@ -11,12 +11,13 @@ use std::task::Poll;
 
 use log::debug;
 
+use crate::rt::Rt;
 use crate::task::Task;
 
 pub(crate) type Queue = Arc<Mutex<LinkedList<Arc<Task>>>>;
 
 /// Runtime definition
-pub(crate) struct Runtime {
+pub struct Runtime {
     pub(crate) task_queue: Queue,
     /// Size of the runtime
     pub(crate) size: AtomicUsize,
@@ -92,14 +93,20 @@ fn configure() -> Runtime {
 pub fn spawn(future: impl Future<Output = ()> + Send + 'static) {
     Runtime::get().spawn(future);
 }
-/// Block on a `Future` and stop others on the `whorl` runtime until this
-/// one completes.
-pub fn block_on(future: impl Future<Output = ()> + Send + 'static) {
-    Runtime::get().spawn_blocking(future);
-}
+
 /// Block further execution of a program until all of the tasks on the
 /// `whorl` runtime are completed.
 pub fn wait() {
     let runtime = Runtime::get();
     while runtime.size.load(Ordering::Relaxed) > 0 {}
+}
+
+impl Rt for Runtime {
+    fn new() -> &'static Self {
+        Runtime::get()
+    }
+
+    fn block_on(&self, future: impl Future<Output = ()> + Send + 'static) {
+        self.spawn_blocking(future)
+    }
 }

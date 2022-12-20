@@ -6,7 +6,8 @@ use github::model::NewIssue;
 use hackmd::api::HackmdAPI;
 use hackmd::model::NewNote;
 use log::debug;
-use rio_rt::runitime as rio;
+use rio_rt::runitime::Runtime;
+use rio_rt::Rt;
 use surf;
 
 pub(crate) mod extractor;
@@ -29,6 +30,7 @@ async fn run(
 
 fn main() {
     env_logger::init();
+    let rio = Runtime::new();
 
     // FIXME: load conf from json
     let conf = model::TriageConf {
@@ -44,9 +46,7 @@ fn main() {
     let github = github::GithubExtractor::new(&conf);
     let hackmd_api = hackmd::api::HackmdAPI::new("", false);
 
-    rio::block_on(async move {
+    rio.block_on(async move {
         run(&github, &hackmd_api).await.unwrap();
     });
-
-    rio::wait();
 }
