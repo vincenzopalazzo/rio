@@ -1,8 +1,0 @@
-{
-    "team": "async-wg",
-    "git": {
-        "owner": "rust-lang",
-        "repo": "rust",
-        "labels": [],
-    }
-}

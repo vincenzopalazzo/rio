@@ -4,6 +4,4 @@ members = [
         "io",
         "lib",
         "rt",
-        "examples/rio_triage_await",
-        "examples/lifetime_issue",
 ]
