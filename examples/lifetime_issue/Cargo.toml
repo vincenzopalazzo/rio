@@ -1,7 +1,0 @@
-[package]
-name = "lifetime_issue"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-rio_rt = { path = "../../rt"  }
