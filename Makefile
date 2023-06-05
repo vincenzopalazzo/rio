@@ -1,5 +1,4 @@
 CC=cargo
-FMT=fmt
 
 OPTIONS=
 
